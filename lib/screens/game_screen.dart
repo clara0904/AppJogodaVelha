@@ -1,4 +1,6 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:jogo_da_velha/components/jogada.dart';
+import 'package:jogo_da_velha/components/mensagem_final.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({super.key});
@@ -43,7 +45,7 @@ class _GameScreenState extends State<GameScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            mensagemFinal == null ? _jogada() : _mensagemFinal(),
+            mensagemFinal == null ? Jogada(jogadorAtual: jogadorAtual) : MensagemFinal(mensagemFinal: mensagemFinal!,),
             _containerJogo(),
             _reiniciarJogo(),
           ],
@@ -52,33 +54,6 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 
-  Widget _jogada(){
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Text(
-        'Faça a sua jogada, jogador $jogadorAtual!',
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 32,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-
-  Widget _mensagemFinal() {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Text(
-        mensagemFinal!,
-        style: const TextStyle(
-          color: Colors.green,
-          fontSize: 32,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
 
   Widget _containerJogo(){
     return Container(
