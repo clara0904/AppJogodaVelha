@@ -1,4 +1,6 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:jogo_da_velha/components/botao_reiniciar.dart';
+import 'package:jogo_da_velha/components/container_jogo.dart';
 import 'package:jogo_da_velha/components/jogada.dart';
 import 'package:jogo_da_velha/components/mensagem_final.dart';
 
@@ -46,29 +48,20 @@ class _GameScreenState extends State<GameScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             mensagemFinal == null ? Jogada(jogadorAtual: jogadorAtual) : MensagemFinal(mensagemFinal: mensagemFinal!,),
-            _containerJogo(),
-            _reiniciarJogo(),
+            ContainerJogo(box: _box),
+            ButtonReiniciar(
+              onPressed: () {
+                setState(() {
+                  inicializarJogo();
+                });
+              },
+            ),
           ],
         ),
       )
     );
   }
 
-
-  Widget _containerJogo(){
-    return Container(
-      height: MediaQuery.of(context).size.height/2,
-      width: MediaQuery.of(context).size.height/2,
-      margin: const EdgeInsets.all(8),
-      child: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-        itemCount: 9, 
-        itemBuilder: (context, int index){
-          return _box(index);
-        }
-      ),
-    );
-  }
 
   Widget _box(int index){
     return InkWell(
@@ -99,23 +92,6 @@ class _GameScreenState extends State<GameScreen> {
           )
         ),
       ),
-    );
-  }
-
-  _reiniciarJogo(){
-    return ElevatedButton(
-      style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Color.fromARGB(255, 14, 8, 146))),
-      onPressed: () {
-        setState(() {
-          inicializarJogo();
-        });
-      },
-      child: const Text("Reiniciar Jogo", 
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 20,
-        ),
-      )
     );
   }
     
