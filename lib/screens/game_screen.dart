@@ -1,8 +1,10 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:jogo_da_velha/components/botao_reiniciar.dart';
+import 'package:jogo_da_velha/components/botao_resultado.dart';
 import 'package:jogo_da_velha/components/container_jogo.dart';
 import 'package:jogo_da_velha/components/jogada.dart';
 import 'package:jogo_da_velha/components/mensagem_final.dart';
+import 'package:jogo_da_velha/screens/result_screen.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({super.key});
@@ -49,13 +51,23 @@ class _GameScreenState extends State<GameScreen> {
           children: [
             mensagemFinal == null ? Jogada(jogadorAtual: jogadorAtual) : MensagemFinal(mensagemFinal: mensagemFinal!,),
             ContainerJogo(box: _box),
-            ButtonReiniciar(
+            BotaoReiniciar(
               onPressed: () {
                 setState(() {
                   inicializarJogo();
                 });
               },
             ),
+            BotaoResultado(onPressed: () {
+              Navigator.push(
+                context, 
+                MaterialPageRoute(builder: 
+                  (context){
+                    return ResultScreen(vencedor: jogadorVencedor);
+                  }
+                )
+              );
+            })
           ],
         ),
       )
@@ -104,6 +116,7 @@ class _GameScreenState extends State<GameScreen> {
     }
   }
 
+  late String jogadorVencedor;
   verificaVencedor(){
     List<List<int>> listaVencedores = [
       [0, 1, 2],
@@ -126,6 +139,7 @@ class _GameScreenState extends State<GameScreen> {
           vencedor("Jogador $posicao0 venceu");
         }
       }
+      jogadorVencedor = '$posicao0 venceu!';
     }
   }
 
@@ -151,5 +165,6 @@ class _GameScreenState extends State<GameScreen> {
       vencedor("Empate!");
       fimDeJogo = true;
     }
+    jogadorVencedor = 'Empate';
   }
 }
