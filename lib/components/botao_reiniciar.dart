@@ -1,8 +1,8 @@
 ﻿import 'package:flutter/material.dart';
 
-class ButtonReiniciar extends StatelessWidget {
+class BotaoReiniciar extends StatelessWidget {
   final Function onPressed;
-  const ButtonReiniciar({super.key, required this.onPressed});
+  const BotaoReiniciar({super.key, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
