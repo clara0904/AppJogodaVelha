@@ -4,10 +4,13 @@ import 'package:jogo_da_velha/components/botao_resultado.dart';
 import 'package:jogo_da_velha/components/container_jogo.dart';
 import 'package:jogo_da_velha/components/jogada.dart';
 import 'package:jogo_da_velha/components/mensagem_final.dart';
+import 'package:jogo_da_velha/database/app_database.dart';
 import 'package:jogo_da_velha/screens/result_screen.dart';
+import 'package:drift/drift.dart' as drift;
 
 class GameScreen extends StatefulWidget {
-  const GameScreen({super.key});
+  final AppDatabase database;
+  const GameScreen({super.key, required this.database});
 
   @override
   State<GameScreen> createState() => _GameScreenState();
@@ -22,6 +25,7 @@ class _GameScreenState extends State<GameScreen> {
   late bool fimDeJogo;
   late List<String> localOcupado;
   String? mensagemFinal;
+  late String jogadorVencedor;
 
   @override
   void initState() {
@@ -63,7 +67,7 @@ class _GameScreenState extends State<GameScreen> {
                 context, 
                 MaterialPageRoute(builder: 
                   (context){
-                    return ResultScreen(vencedor: jogadorVencedor);
+                    return ResultScreen(database: widget.database);
                   }
                 )
               );
@@ -116,7 +120,7 @@ class _GameScreenState extends State<GameScreen> {
     }
   }
 
-  late String jogadorVencedor;
+  
   verificaVencedor(){
     List<List<int>> listaVencedores = [
       [0, 1, 2],
@@ -135,11 +139,13 @@ class _GameScreenState extends State<GameScreen> {
       String posicao2 = localOcupado[posicoes[2]];
 
       if(posicao0.isNotEmpty){
-        if(posicao0 == posicao1 && posicao0 == posicao2){
+        if (posicao0 == posicao1 && posicao0 == posicao2) {
+          jogadorVencedor = posicao0;
           vencedor("Jogador $posicao0 venceu");
+          _salvarVencedor('$jogadorVencedor venceu'); 
+          return;
         }
       }
-      jogadorVencedor = '$posicao0 venceu!';
     }
   }
 
@@ -164,7 +170,17 @@ class _GameScreenState extends State<GameScreen> {
     if(empate){
       vencedor("Empate!");
       fimDeJogo = true;
+      _salvarVencedor(jogadorVencedor);
     }
     jogadorVencedor = 'Empate';
+
+  }
+
+  void _salvarVencedor(String jogadorVencedor) {
+    final game = GameResultsCompanion(
+      vencedor: drift.Value(jogadorVencedor),
+      date: drift.Value(DateTime.now()),
+    );
+    widget.database.addGame(game);
   }
 }
