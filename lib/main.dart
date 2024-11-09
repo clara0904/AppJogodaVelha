@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:jogo_da_velha/database/app_database.dart';
 import 'package:jogo_da_velha/screens/game_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final AppDatabase database = AppDatabase();
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'App Jogo da Velha',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
         primaryColor: const Color.fromARGB(255, 12, 18, 49),
         scaffoldBackgroundColor: const Color.fromARGB(255, 12, 18, 49)
       ),
-      home: const GameScreen(),
+      home: GameScreen(database: database),
     );
   }
 }
