@@ -27,8 +27,15 @@ class $GameResultsTable extends GameResults
           GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
       type: DriftSqlType.string,
       requiredDuringInsert: true);
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
   @override
-  List<GeneratedColumn> get $columns => [id, vencedor];
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+      'date', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: Constant(DateTime.now()));
+  @override
+  List<GeneratedColumn> get $columns => [id, vencedor, date];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -48,6 +55,10 @@ class $GameResultsTable extends GameResults
     } else if (isInserting) {
       context.missing(_vencedorMeta);
     }
+    if (data.containsKey('date')) {
+      context.handle(
+          _dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
+    }
     return context;
   }
 
@@ -61,6 +72,8 @@ class $GameResultsTable extends GameResults
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       vencedor: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}vencedor'])!,
+      date: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
     );
   }
 
@@ -73,12 +86,15 @@ class $GameResultsTable extends GameResults
 class GameResult extends DataClass implements Insertable<GameResult> {
   final int id;
   final String vencedor;
-  const GameResult({required this.id, required this.vencedor});
+  final DateTime date;
+  const GameResult(
+      {required this.id, required this.vencedor, required this.date});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['vencedor'] = Variable<String>(vencedor);
+    map['date'] = Variable<DateTime>(date);
     return map;
   }
 
@@ -86,6 +102,7 @@ class GameResult extends DataClass implements Insertable<GameResult> {
     return GameResultsCompanion(
       id: Value(id),
       vencedor: Value(vencedor),
+      date: Value(date),
     );
   }
 
@@ -95,6 +112,7 @@ class GameResult extends DataClass implements Insertable<GameResult> {
     return GameResult(
       id: serializer.fromJson<int>(json['id']),
       vencedor: serializer.fromJson<String>(json['vencedor']),
+      date: serializer.fromJson<DateTime>(json['date']),
     );
   }
   @override
@@ -103,17 +121,21 @@ class GameResult extends DataClass implements Insertable<GameResult> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'vencedor': serializer.toJson<String>(vencedor),
+      'date': serializer.toJson<DateTime>(date),
     };
   }
 
-  GameResult copyWith({int? id, String? vencedor}) => GameResult(
+  GameResult copyWith({int? id, String? vencedor, DateTime? date}) =>
+      GameResult(
         id: id ?? this.id,
         vencedor: vencedor ?? this.vencedor,
+        date: date ?? this.date,
       );
   GameResult copyWithCompanion(GameResultsCompanion data) {
     return GameResult(
       id: data.id.present ? data.id.value : this.id,
       vencedor: data.vencedor.present ? data.vencedor.value : this.vencedor,
+      date: data.date.present ? data.date.value : this.date,
     );
   }
 
@@ -121,46 +143,55 @@ class GameResult extends DataClass implements Insertable<GameResult> {
   String toString() {
     return (StringBuffer('GameResult(')
           ..write('id: $id, ')
-          ..write('vencedor: $vencedor')
+          ..write('vencedor: $vencedor, ')
+          ..write('date: $date')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, vencedor);
+  int get hashCode => Object.hash(id, vencedor, date);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is GameResult &&
           other.id == this.id &&
-          other.vencedor == this.vencedor);
+          other.vencedor == this.vencedor &&
+          other.date == this.date);
 }
 
 class GameResultsCompanion extends UpdateCompanion<GameResult> {
   final Value<int> id;
   final Value<String> vencedor;
+  final Value<DateTime> date;
   const GameResultsCompanion({
     this.id = const Value.absent(),
     this.vencedor = const Value.absent(),
+    this.date = const Value.absent(),
   });
   GameResultsCompanion.insert({
     this.id = const Value.absent(),
     required String vencedor,
+    this.date = const Value.absent(),
   }) : vencedor = Value(vencedor);
   static Insertable<GameResult> custom({
     Expression<int>? id,
     Expression<String>? vencedor,
+    Expression<DateTime>? date,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (vencedor != null) 'vencedor': vencedor,
+      if (date != null) 'date': date,
     });
   }
 
-  GameResultsCompanion copyWith({Value<int>? id, Value<String>? vencedor}) {
+  GameResultsCompanion copyWith(
+      {Value<int>? id, Value<String>? vencedor, Value<DateTime>? date}) {
     return GameResultsCompanion(
       id: id ?? this.id,
       vencedor: vencedor ?? this.vencedor,
+      date: date ?? this.date,
     );
   }
 
@@ -173,6 +204,9 @@ class GameResultsCompanion extends UpdateCompanion<GameResult> {
     if (vencedor.present) {
       map['vencedor'] = Variable<String>(vencedor.value);
     }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
     return map;
   }
 
@@ -180,7 +214,8 @@ class GameResultsCompanion extends UpdateCompanion<GameResult> {
   String toString() {
     return (StringBuffer('GameResultsCompanion(')
           ..write('id: $id, ')
-          ..write('vencedor: $vencedor')
+          ..write('vencedor: $vencedor, ')
+          ..write('date: $date')
           ..write(')'))
         .toString();
   }
@@ -201,11 +236,13 @@ typedef $$GameResultsTableCreateCompanionBuilder = GameResultsCompanion
     Function({
   Value<int> id,
   required String vencedor,
+  Value<DateTime> date,
 });
 typedef $$GameResultsTableUpdateCompanionBuilder = GameResultsCompanion
     Function({
   Value<int> id,
   Value<String> vencedor,
+  Value<DateTime> date,
 });
 
 class $$GameResultsTableFilterComposer
@@ -222,6 +259,9 @@ class $$GameResultsTableFilterComposer
 
   ColumnFilters<String> get vencedor => $composableBuilder(
       column: $table.vencedor, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get date => $composableBuilder(
+      column: $table.date, builder: (column) => ColumnFilters(column));
 }
 
 class $$GameResultsTableOrderingComposer
@@ -238,6 +278,9 @@ class $$GameResultsTableOrderingComposer
 
   ColumnOrderings<String> get vencedor => $composableBuilder(
       column: $table.vencedor, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get date => $composableBuilder(
+      column: $table.date, builder: (column) => ColumnOrderings(column));
 }
 
 class $$GameResultsTableAnnotationComposer
@@ -254,6 +297,9 @@ class $$GameResultsTableAnnotationComposer
 
   GeneratedColumn<String> get vencedor =>
       $composableBuilder(column: $table.vencedor, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
 }
 
 class $$GameResultsTableTableManager extends RootTableManager<
@@ -281,18 +327,22 @@ class $$GameResultsTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> vencedor = const Value.absent(),
+            Value<DateTime> date = const Value.absent(),
           }) =>
               GameResultsCompanion(
             id: id,
             vencedor: vencedor,
+            date: date,
           ),
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required String vencedor,
+            Value<DateTime> date = const Value.absent(),
           }) =>
               GameResultsCompanion.insert(
             id: id,
             vencedor: vencedor,
+            date: date,
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
