@@ -11,7 +11,7 @@ class BotaoReiniciar extends StatelessWidget {
       onPressed: () {
         onPressed();
       },
-      child: const Text("Reiniciar Jogo", 
+      child: const Text("Reiniciar jogo", 
         style: TextStyle(
           color: Colors.white,
           fontSize: 20,

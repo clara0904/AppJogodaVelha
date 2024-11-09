@@ -6,15 +6,26 @@ class BotaoResultado extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: const ButtonStyle(backgroundColor: WidgetStatePropertyAll(Color.fromARGB(255, 10, 114, 114))),
-      onPressed: () {
-        onPressed();
-      },
-      child: const Text("Ver resultados", 
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 20,
+    return Padding(
+      padding: const EdgeInsets.all(5.0),
+      child: ElevatedButton.icon(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color.fromARGB(255, 10, 114, 114),
+        ),
+        onPressed: () {
+          onPressed();
+        },
+        icon: const Icon(
+          Icons.emoji_events,
+          color: Colors.amberAccent,
+          size: 20,
+        ),
+        label: const Text(
+          "Ver resultados",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+          ),
         ),
       ),
     );
